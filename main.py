@@ -1,19 +1,20 @@
 import cv2
+import numpy as np 
 
 # Load 2 images
-image = cv2.imread("elfs.jpeg")
-watermark = cv2.imread("watermark.png")
+foreground = cv2.imread("giraffe.jpeg")
+background = cv2.imread("safari.jpeg")
 
-print(watermark.shape)
+print(foreground[40,40])
+width = foreground.shape[1]
+height = foreground.shape[0]
+resized_background = cv2.resize(background, (width, height))
 
-x = image.shape[1] - watermark.shape[1]
-y = image.shape[0] - watermark.shape[0]
+for i in range(width):
+  for j in range(height):
+    pixel = foreground[j, i]
+    if np.any(pixel == [1, 255, 0]):
+      foreground[j, i] = resized_background[j, i]
 
-watermark_place = image[y:, x:]
-cv2.imwrite("watermark_img.jpeg", watermark_place)
 
-blend = cv2.addWeighted(watermark_place, 0.5, watermark, 0.5, 0)
-cv2.imwrite("blend.jpeg", blend)
-
-image[y:, x:] = blend
-cv2.imwrite("elfs_watermarked.jpeg", image)
+cv2.imwrite("output.jpeg", foreground)
